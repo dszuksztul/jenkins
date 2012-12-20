@@ -1,0 +1,84 @@
+Budowanie:
+potrzebny jest maven, w wersji 3.x oraz jdk 1.6 (trzeba skonfigurować zmienną JAVA_HOME). 
+trzeba skonfigurować plik ${home}/.m2/settings.xml (przykład poniżej), tak aby maven widział repozytoria jenkins'a (repozytoria są skopiowane z głównego pom.xml jenkins'a). Dobrym pomysłem jest też skonfigurowanie proxies w tym pliku (przykład poniżej).
+
+
+Budowanie wykonywałem poleceniami:
+mvn clean
+mvn -DskipTests install
+cd war
+mvn -Dport=8081 hudson-dev:run
+
+dwa ostatnie to oczywiście uruchomienie jenkins'a (port dowolny, domyślnie jest to 8080).
+Po wykonaniu testów (ręcznych, z automatycznymi na windoze jest problem) jenkins jest do wzięcia z war/target/jenkins.war
+
+---------------------------------------------
+${home}/.m2/settings.xml (skopiuj i wklej, zawiera konfigurację proxy!!! sprawdź 
+                          serwery!)
+---------------------------------------------
+<settings>
+ <!-- Added Jenkins repositories -->
+ <profiles>
+   <profile>
+     <id>jenkins</id>
+     <activation>
+       <activeByDefault>true</activeByDefault>
+     </activation>
+     <repositories>
+
+    <repository>
+      <id>repo.jenkins-ci.org</id>
+      <url>http://repo.jenkins-ci.org/public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository><!-- only until we release ant and javadoc plugins -->
+      <id>maven.jenkins-ci.org</id>
+      <url>http://maven.jenkins-ci.org/content/repositories/snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+     </repositories>
+     <pluginRepositories>
+    <pluginRepository>
+      <id>repo.jenkins-ci.org</id>
+      <url>http://repo.jenkins-ci.org/public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+       <pluginRepository>
+         <id>jenkins-m2-repository</id>
+         <name>Jenkins Plugin Repository</name>
+         <url>http://maven.jenkins-ci.org:8081/content/repositories/releases/</url>
+         <layout>default</layout>
+       </pluginRepository>
+
+     </pluginRepositories>
+   </profile>
+ </profiles>
+  <proxies>
+   <proxy>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>proxy2</host>
+      <port>80</port>
+      <nonProxyHosts>localhost|127.0.0.*</nonProxyHosts>
+    </proxy>
+  </proxies>
+ <pluginGroups>
+   <pluginGroup>org.jenkins-ci.tools</pluginGroup>
+ </pluginGroups>
+
+</settings>
