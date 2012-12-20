@@ -32,6 +32,7 @@ import hudson.model.User;
 import hudson.model.UserProperty;
 import hudson.scm.SCM;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -160,8 +161,11 @@ public abstract class MailAddressResolver implements ExtensionPoint {
     /**
      * Returns all the registered {@link MailAddressResolver} descriptors.
      */
-    public static ExtensionList<MailAddressResolver> all() {
-        return Jenkins.getInstance().getExtensionList(MailAddressResolver.class);
+    public static List<MailAddressResolver> all() {
+    	// Dodatkowe resolvery rozwiązujące powodowały okrótne zmulenie jenkins'a
+    	// zwracam więc pustą listę.
+    	LOGGER.info( "Extension mail resolving skipped");
+        return Collections.emptyList(); 
     }
 
     private static final Logger LOGGER = Logger.getLogger(MailAddressResolver.class.getName());
